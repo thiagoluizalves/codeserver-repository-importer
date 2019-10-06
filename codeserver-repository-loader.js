@@ -35,7 +35,7 @@ const repoDir = args['repo-dir'];
 //How many commits will be processed at a time
 const BULK_SIZE = 50;
 const MAX_BUFFER = 1024 * 1024 * 2; // Defined to 2MB
-const INTERVAL = 1000 * 10; // Set to 5min
+const INTERVAL = 1000 * 60 * 10; // Set to 10min
 
 if (!validateParameters()) {
     return;
@@ -60,11 +60,7 @@ async function onboardCommits() {
 
     for (let i = BULK_SIZE; i < commits.length; i = i + BULK_SIZE) {
         let commitId = (BULK_SIZE + i > commits.length)  ? commits[commits.length] : commits[i];
-        try {
-            await processCommit(commitId);
-        } catch (ex) {
-            console.error(ex);
-        }
+        await processCommit(commitId);
         await sleep(INTERVAL);
     }
 }
@@ -85,6 +81,7 @@ async function getTotalOfCommitsToOnboard() {
 
 async function checkoutToBranch() {
     console.log(`Checking out to branch ${branchTo}`);
+    await exec(`git -C '${repoDir}' merge --abort`);
     const { stdout, stderr } = await exec(`git -C '${repoDir}' checkout ${branchTo}`);
     if (stderr) {
         console.error(stderr);
@@ -109,6 +106,7 @@ async function mergeToCommit(commitId) {
     // Max buffer size is defined to 2MB 
     const { stdout, stderr } = await exec(`git -C '${repoDir}' merge '${commitId}'`, { maxBuffer: MAX_BUFFER});
     if (stderr) {
+        const { stdout, stderr } = await exec(`git -C '${repoDir}' merge --abort`, { maxBuffer: MAX_BUFFER});
         console.error(stderr); 
     }
     console.log(`Commit ${commitId} was merged to ${branchTo} succesfull`);
