@@ -1,0 +1,17 @@
+{
+  "name": "codeserver-repository-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "codeserver-repository-loader.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thiago Luiz Alves",
+  "license": "ISC",
+  "dependencies": {
+    "console-stamp": "3.0.0-rc2.0",
+    "gift": "^0.10.2",
+    "request": "2.88.0",
+    "yargs": "14.0.0"
+  }
+}
